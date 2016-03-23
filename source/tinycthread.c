@@ -384,7 +384,8 @@ int cnd_broadcast(cnd_t *cond)
 #if defined(_TTHREAD_WIN32_)
 static int _cnd_timedwait_win32(cnd_t *cond, mtx_t *mtx, DWORD timeout)
 {
-  int result, lastWaiter;
+  DWORD result;
+  int lastWaiter;
 
   /* Increment number of waiters */
   EnterCriticalSection(&cond->mWaitersCountLock);
@@ -404,7 +405,7 @@ static int _cnd_timedwait_win32(cnd_t *cond, mtx_t *mtx, DWORD timeout)
     mtx_lock(mtx);
     return thrd_timedout;
   }
-  else if (result == (int)WAIT_FAILED)
+  else if (result == WAIT_FAILED)
   {
     /* The mutex is locked again before the function returns, even if an error occurred */
     mtx_lock(mtx);
